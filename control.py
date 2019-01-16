@@ -9,7 +9,8 @@ def startSimulation():
 
     sc.obsSock.sendall(commands.startLeader())
     sc.obsSock.sendall(commands.leaderDist())
-    #sc.controlSock.send(commands.moveForward(50))
+    sc.controlSock.send(commands.moveForward(50))
+    time.sleep(7)
     sc.controlSock.send(commands.left(100,100))
 
 def getLeaderDist():
