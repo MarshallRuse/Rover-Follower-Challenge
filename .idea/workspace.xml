@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6d5a035f-d1fa-4312-ad79-9151a447d94b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Rover.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control.py" beforeDir="false" afterPath="$PROJECT_DIR$/control.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,7 +18,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/socket_controller.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="282">
+            <state relative-caret-position="378">
               <caret line="44" selection-start-line="44" selection-end-line="44" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
@@ -28,17 +30,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/commands.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="387">
+            <state relative-caret-position="312">
               <caret line="32" column="42" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/control.py">
+        <entry file="file://$PROJECT_DIR$/control_logic.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="900">
-              <caret line="60" column="17" lean-forward="true" selection-start-line="60" selection-start-column="17" selection-end-line="60" selection-end-column="17" />
+            <state relative-caret-position="225">
+              <caret line="15" column="53" lean-forward="true" selection-start-line="15" selection-start-column="53" selection-end-line="15" selection-end-column="53" />
+              <folding>
+                <element signature="e#0#30#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Rover.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="104">
+              <caret line="55" column="56" lean-forward="true" selection-start-line="55" selection-start-column="56" selection-end-line="55" selection-end-column="56" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
               </folding>
@@ -67,6 +81,8 @@
         <option value="$PROJECT_DIR$/socket_controller.py" />
         <option value="$PROJECT_DIR$/commands.py" />
         <option value="$PROJECT_DIR$/control.py" />
+        <option value="$PROJECT_DIR$/Rover.py" />
+        <option value="$PROJECT_DIR$/control_logic.py" />
       </list>
     </option>
   </component>
@@ -124,7 +140,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/control.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/control_logic.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -170,7 +186,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.22945736" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.33953488" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -190,7 +206,7 @@
     <entry file="file://$PROJECT_DIR$/server.py" />
     <entry file="file://$PROJECT_DIR$/socket_controller.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="282">
+        <state relative-caret-position="378">
           <caret line="44" selection-start-line="44" selection-end-line="44" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
@@ -200,15 +216,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/commands.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="387">
+        <state relative-caret-position="312">
           <caret line="32" column="42" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/control.py">
+    <entry file="file://$PROJECT_DIR$/Rover.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="900">
-          <caret line="60" column="17" lean-forward="true" selection-start-line="60" selection-start-column="17" selection-end-line="60" selection-end-column="17" />
+        <state relative-caret-position="104">
+          <caret line="55" column="56" lean-forward="true" selection-start-line="55" selection-start-column="56" selection-end-line="55" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/control_logic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="53" lean-forward="true" selection-start-line="15" selection-start-column="53" selection-end-line="15" selection-end-column="53" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
           </folding>
