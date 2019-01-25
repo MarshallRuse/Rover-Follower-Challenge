@@ -10,6 +10,9 @@ def startSimulation():
     sc.connectObserverSock() # connect the control socket
     sc.connectControlSock() # connect the observation socket
 
+    global Leader
+    global Follower
+
     # Leader must be instantiated first, initialization of follower depends on it
     # A follower must have someone to follow
     Leader = Rover.Leader(sc.obsSock)
@@ -21,7 +24,6 @@ def startSimulation():
 
 
 startSimulation()
-
 
 
 

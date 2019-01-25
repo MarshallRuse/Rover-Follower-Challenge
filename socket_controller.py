@@ -7,25 +7,23 @@ controlSock = 0
 obsSock = 0
 host = '127.0.0.1'
 
+# Generic function for reading a file and splitting by newline
 def readFile(fileName):
     f = open(fileName)
     lines = f.read().splitlines()
     f.close()
     return lines
 
-def findPorts(lines):
-    conPort = 0
-    obsPort = 0
-    # probably the first 2 lines, but function scans the whole
-    # config text in case settings are rearranged
-    for line in lines:
+# Takes a newline delimited list of config settings, turns them into
+# a string dictionary of {configName : configSetting}
+def configDictionary(configLines):
+    configDict = {}
+    for line in configLines:
         setting = line.split("=")
-        if setting[0].lower() == "controlport":
-            conPort = int(setting[1])
-        if setting[0].lower() == "observationport":
-            obsPort = int(setting[1])
+        configDict[setting[0]] = setting[1]
 
-    return conPort, obsPort
+    return configDict
+
 
 def connectControlSock():
     global controlSock
@@ -44,6 +42,7 @@ def connectObserverSock():
     obsSock.connect((host, obsPort))
 
 
-configSettings = readFile("../Settings/config.txt")
-conPort, obsPort = findPorts(configSettings)
+configSettings = configDictionary(readFile("../Settings/config.txt"))
+conPort = int(configSettings["controlPort"])
+obsPort = int(configSettings["observationPort"])
 
