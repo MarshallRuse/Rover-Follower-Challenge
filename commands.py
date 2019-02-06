@@ -5,11 +5,8 @@ def moveForward(amount):
 def accelerate(amount):
     return str.encode("Rover,incrementPower(" + str(amount) + ")\n")
 
-def left(lWheels, rWheels):
-    return str.encode("Rover,setLRPower(" + str((-1 * lWheels)) + "," + str(abs(rWheels)) + ")\n")
-
-def right(lWheels, rWheels):
-    return str.encode("Rover,setLRPower(" + str(abs(lWheels)) + "," + str((-1 * rWheels)) + ")\n")
+def setLRPower(left, right):
+    return str.encode("Rover,setLRPower(" + str(left) + "," + str(right) + ")\n")
 
 def stop():
     return str.encode("Rover,setForwardPower(0)\n")

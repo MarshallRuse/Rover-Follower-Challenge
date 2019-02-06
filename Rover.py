@@ -1,7 +1,8 @@
-import socket_controller as sc
-import commands
 import time
 import math
+
+import commands
+
 
 # The Rover class
 class Rover:
@@ -9,16 +10,24 @@ class Rover:
     def __init__(self, socketConn):
 
         self.conn = socketConn
+        self.WHEEL_RADIUS = 0.5 # m, based off of Curiosity Rover specs
+        self.WHEEL_AXLE_LENGTH = 2.8 # m
         self.speed = 0
+        self.velocity = [0,0]
         self.orientation = 0
         self.position = [0,0]
 
+    #TODO: Some of these get overwritten in subclasses, lookup
+    # Python interfaces
     # returns the x, z position of the Rover as floats
     def getPosition(self):
         return self.position
 
     def getSpeed(self):
         return self.speed
+
+    def getVelocity(self):
+        return self.velocity
 
     def getOrientation(self):
         return self.orientation
@@ -29,12 +38,10 @@ class Leader(Rover):
     def __init__(self, socketConn):
         super().__init__(socketConn)
         self.position = self.setPosition()
-        self.distFromFollower = self.setDistFromFollower()
 
 
     def setPosition(self):
-        self.conn.sendall(commands.findLeader())
-        GPSString = sc.obsSock.recv(1024).decode('utf-8')
+        GPSString = self.conn.sendAndReceive(commands.findLeader())
         positions = GPSString.split(',')[1:]
         xPos = float(positions[0])
         zPos = float(positions[1][:-2])  # -2 b/c of the newline character
@@ -61,47 +68,59 @@ class Leader(Rover):
 
             self.orientation = clockwiseFromNorth
 
+    def setVelocity(self):
+        timeInterval = 0.2
+        pos1 = self.getPosition()
+        time.sleep(timeInterval)
+        pos2 = self.getPosition()
+        xSpeed = (pos2[0] - pos1[0]) / timeInterval
+        zSpeed = (pos2[1] - pos1[1]) / timeInterval
+        self.velocity = [xSpeed, zSpeed]
 
-    def setDistFromFollower(self):
-        self.conn.sendall(commands.leaderDist())
-        distString = self.conn.recv(1024).decode('utf-8')
-        dist = distString.split(',')[1][:-2]  # -2 b/c of the newline character
-        self.distFromFollower = float(dist)
+    def setSpeed(self):
+        self.setVelocity()
+        self.speed = math.sqrt(math.pow(self.velocity[0], 2) + math.pow(self.velocity[1], 2))
 
-    def getDistFromFollower(self):
-        return self.distFromFollower
+
+    def getPosition(self):
+        self.setPosition()
+        return self.position
+
+    def getVelocity(self):
+        self.setVelocity()
+        return self.velocity
+
+    def getSpeed(self):
+        self.setSpeed()
+        return self.speed
+
 
 
 class Follower(Rover):
 
+
     def __init__(self, socketConn, leader):
         super().__init__(socketConn)
+        ### Self Observing Attributes ###
+        self.Leader = leader
         self.position = self.setPosition()
         self.orientation = self.setOrientation()
-        self.distToLeader = self.setDistToLeader(leader)
-        self.TOO_CLOSE = int(sc.configSettings["tooClose"])
-        self.TOO_FAR = int(sc.configSettings["tooFar"])
 
 
-
+    #### Self Observing Methods ####
     def setPosition(self):
-        self.conn.sendall(commands.findRover())
-        GPSString = self.conn.recv(1024).decode('utf-8')
+        GPSString = self.conn.sendAndReceive(commands.findRover())
         positions = GPSString.split(',')[1:]
         xPos = float(positions[0])
         zPos = float(positions[1][:-2])  # -2 b/c of the newline character
         self.position = [xPos, zPos]
 
     def setOrientation(self):
-        self.conn.sendall(commands.roverCompassDir())
-        CompassString = self.conn.recv(1024).decode('utf-8')
+        CompassString = self.conn.sendAndReceive(commands.roverCompassDir())
         compassAngle = CompassString.split(',')
         self.orientation = float(compassAngle[1][:-2])
 
-    def setDistToLeader(self, leader):
-        if isinstance(leader, Leader):
-            self.distToLeader = leader.getDistFromFollower()
 
-
-    def getDistToLeader(self):
-        return self.distToLeader
+    #### Self Actuating Methods ####
+    def accelerate(self):
+        pass
