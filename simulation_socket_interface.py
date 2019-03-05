@@ -11,8 +11,8 @@ class SimulationSocketInterface:
     def __init__(self):
         self.host = '127.0.0.1'
         self.configSettings = ConfigurationSettings()
-        self.controlPort = self.configSettings.settings["controlPort"]
-        self.observationPort = self.configSettings.settings["observationPort"]
+        self.controlPort = int(self.configSettings.settings["controlPort"])
+        self.observationPort = int(self.configSettings.settings["observationPort"])
         self.controlSocket = SimulationSocket(self.host, self.controlPort)
         self.observationSocket = SimulationSocket(self.host, self.observationPort)
 

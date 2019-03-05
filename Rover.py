@@ -2,6 +2,8 @@ import time
 import math
 
 import commands
+import math_utils as mathUtils
+from socket_communication_errors import *
 
 
 # The Rover class
@@ -14,12 +16,12 @@ class Rover:
         self.WHEEL_AXLE_LENGTH = 2.8 # m
         self.speed = 0
         self.velocity = [0,0]
-        self.orientation = 0
-        self.position = [0,0]
+        self.compassHeading = 1
+        self.position = [1,1]
 
-    #TODO: Some of these get overwritten in subclasses, lookup
-    # Python interfaces
-    # returns the x, z position of the Rover as floats
+    #TODO: Tie the updating of these values
+    # to a state update interval
+    '''
     def getPosition(self):
         return self.position
 
@@ -29,15 +31,14 @@ class Rover:
     def getVelocity(self):
         return self.velocity
 
-    def getOrientation(self):
-        return self.orientation
-
+    def getCompassHeading(self):
+        return self.compassHeading
+    '''
 
 class Leader(Rover):
 
     def __init__(self, socketConn):
         super().__init__(socketConn)
-        self.position = self.setPosition()
 
 
     def setPosition(self):
@@ -47,26 +48,6 @@ class Leader(Rover):
         zPos = float(positions[1][:-2])  # -2 b/c of the newline character
         self.position = [xPos, zPos]
 
-    # Note to self: Find a better way to do this that doesn't
-    # pause program execution
-    def setOrientation(self):
-        pos1 = self.getPosition()
-        time.sleep(0.2)
-        self.setPosition()
-        pos2 = self.getPosition()
-        if pos1[0] != pos2[0] or pos1[1] != pos2[1]: #ie. the rover has moved
-            xDiff = pos2[0] - pos1[0]
-            zDiff = pos2[1] - pos1[1]
-            if xDiff > 0 and zDiff > 0:
-                clockwiseFromNorth = math.degrees(math.atan(xDiff / zDiff))
-            elif xDiff < 0 and zDiff > 0:
-                clockwiseFromNorth = 360 - math.degrees(math.atan(abs(xDiff) / zDiff))
-            elif xDiff > 0 and zDiff < 0:
-                clockwiseFromNorth = 90 + math.degrees(math.atan(abs(zDiff) / xDiff))
-            else:
-                clockwiseFromNorth = 270 - math.degrees(math.atan(abs(zDiff) / abs(xDiff)))
-
-            self.orientation = clockwiseFromNorth
 
     def setVelocity(self):
         timeInterval = 0.2
@@ -75,23 +56,21 @@ class Leader(Rover):
         pos2 = self.getPosition()
         xSpeed = (pos2[0] - pos1[0]) / timeInterval
         zSpeed = (pos2[1] - pos1[1]) / timeInterval
-        self.velocity = [xSpeed, zSpeed]
+        return [xSpeed, zSpeed]
 
     def setSpeed(self):
-        self.setVelocity()
-        self.speed = math.sqrt(math.pow(self.velocity[0], 2) + math.pow(self.velocity[1], 2))
+        vel = self.getVelocity()
+        return math.sqrt(math.pow(vel[0], 2) + math.pow(vel[1], 2))
 
 
     def getPosition(self):
-        self.setPosition()
         return self.position
 
+
     def getVelocity(self):
-        self.setVelocity()
         return self.velocity
 
     def getSpeed(self):
-        self.setSpeed()
         return self.speed
 
 
@@ -103,24 +82,44 @@ class Follower(Rover):
         super().__init__(socketConn)
         ### Self Observing Attributes ###
         self.Leader = leader
-        self.position = self.setPosition()
-        self.orientation = self.setOrientation()
-
 
     #### Self Observing Methods ####
     def setPosition(self):
         GPSString = self.conn.sendAndReceive(commands.findRover())
-        positions = GPSString.split(',')[1:]
-        xPos = float(positions[0])
-        zPos = float(positions[1][:-2])  # -2 b/c of the newline character
-        self.position = [xPos, zPos]
+        try:
+            if len(GPSString) > 0:
+                print("Follower GPS:  " + GPSString)
+                positions = GPSString.split(',')[1:]
+                xPos = float(positions[0])
+                zPos = float(positions[1][:-2])  # -2 b/c of the newline character
+                self.position = [xPos, zPos]
+            else:
+                raise RoverCoordinatesReturnError('Follower GPS Coordinates not returned by socket')
+        except RoverCoordinatesReturnError as e:
+            print(e)
 
-    def setOrientation(self):
-        CompassString = self.conn.sendAndReceive(commands.roverCompassDir())
-        compassAngle = CompassString.split(',')
-        self.orientation = float(compassAngle[1][:-2])
+    def setCompassHeading(self):
+        try:
+            CompassString = self.conn.sendAndReceive(commands.roverCompassDir())
+            if len(CompassString) > 0:
+                print("Follower Compass: " + CompassString)
+                compassAngle = CompassString.split(',')
+                self.compassHeading = float(compassAngle[1][:-2])
+            else:
+                raise RoverCompassReturnError('Follower Compass Angle not returned by socket')
+        except RoverCompassReturnError as e:
+            print(e)
 
+
+    def getCompassHeading(self):
+        return self.compassHeading
+
+
+    def getPosition(self):
+        return self.position
 
     #### Self Actuating Methods ####
-    def accelerate(self):
-        pass
+    def accelerate(self, leftWheel, rightWheel):
+        leftWheel = round(leftWheel)
+        rightWheel = round(rightWheel)
+        self.conn.sendOnly(commands.setLRPower(leftWheel, rightWheel))

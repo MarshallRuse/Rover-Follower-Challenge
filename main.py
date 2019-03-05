@@ -1,7 +1,10 @@
 import math
 import time
 
+
 from simulation_socket_interface import *
+from Supervisor import *
+from analysis.simulation_recorder import *
 import Rover
 import commands
 
@@ -23,7 +26,20 @@ def startSimulation(SSI):
 def main():
     SSI = SimulationSocketInterface()
     Leader, Follower = startSimulation(SSI)
+    SimRecorder = SimulationRecorder()
+    supervisor = Supervisor(Leader, Follower, SimRecorder)
 
+    startTime = time.time()
+    i = 0
+    while time.time() < startTime + 55:
+        print("TIME::: " + str(i) + " secs.")
+        SimRecorder.record_time(i)
+        supervisor.execute()
+        i += 1
+        time.sleep(1)
+    SimRecorder.writeToCSV()
+
+main()
 
 
 
