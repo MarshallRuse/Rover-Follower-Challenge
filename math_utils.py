@@ -98,6 +98,21 @@ def clockwise2DRotationMatrix(angle):
 
     return rotatedBasis
 
+
+def differenceVec(Bx, Bz, Ax, Az):
+    diffX = Bx - Ax
+    diffZ = Bz - Az
+    return [diffX, diffZ]
+
+def euclideanDist(point2, point1):
+    diffVec = differenceVec(point2[0], point2[1], point1[0], point1[1])
+    return (diffVec[0]**2 + diffVec[1]**2)**0.5
+
+def logistic(x, mid=0, max=1, growthRate=1):
+    return max / (1 + math.exp(-1 * growthRate * (x - mid)))
+
+def tanh(x):
+    return (2 / (1 + math.exp(-2 * x))) - 1
 '''
 matrixInverse returns the inverse of a matrix
 '''

@@ -3,56 +3,104 @@ import math
 from pose import *
 from configuration_settings import *
 import math_utils as math_utils
+import global_vars
 
 
 class Supervisor:
 
-    def __init__(self, Leader, Follower, Sim_Recorder):
+    def __init__(self, Leader, Follower, Sim_Recorder, testing):
         configSettings = ConfigurationSettings().settings
 
+        # Just for the purposes of testing
+        self.testing = testing
+
+        # Leader properties
         self.Leader = Leader
+        self.leaderPosition = [2, 2]  # initial dummy placeholder
+        self.leaderPrevPosition = [2,2]
+        self.leaderHeadingVector = [2,2]
+        self.leaderCompassHeadingAngle = 2  # initial dummy placeholder
+        self.leaderVelocity = [2,2]
+        self.leaderSpeed = 2
+            # FCS = Follower Coordinate System
+        self.FCSLeaderPosition = [3, 3]  # initial dummy placeholder
+
+        # Follower properties
         self.Follower = Follower
+        self.followerPosition = [1, 1]  # initial dummy placeholder
+        self.followerPrevPosition = [1,1]
+        self.followerHeadingVector = [1,1]
+        self.followerCompassHeading = 1  # initial dummy placeholder
+        self.followerVelocity = 1
+        self.followerSpeed = 1
+
+        # Follower error metrics
+        self.errorAngle = 0  # initial dummy placeholder
+        self.errorAngleRiemannSum = 0 # for integral error
+        self.prevErrorAngle = 0 # for derivative error
+        self.errorDistance = 1  # initial dummy placeholder
+        self.prevErrorDistance = 0
+
+        # Simulation Recorder properties
         self.SimRecorder = Sim_Recorder
-        self.leaderPosition = [2,2] # initial dummy placeholder
-        self.leaderRelativeCompassAngle = 1 # initial dummy placeholder
-        self.followerPosition = [1,1] # initial dummy placeholder
-        self.followerCompassHeading = 1 # initial dummy placeholder
-        # FRF = Follower Reference Frame
-        self.FCSLeaderPosition = [3,3] # initial dummy placeholder
-        self.time = 0.0 # s
-        self.deltaTime = 0.25 # s
+
+        # Simulation Goal properties
         self.tooFarDist = int(configSettings["tooFar"])
         self.tooCloseDist = int(configSettings["tooClose"])
         self.optimalDist = self.tooCloseDist + ((self.tooFarDist - self.tooCloseDist) / 2)
-        self.errorPosition = 1 # initial dummy placeholder
-        self.errorHeading = 1 # initial dummy placeholder
-        self.ep = 0
-        self.kp = 10
-        self.vMax = 25 # per wheel
+
+        # Miscellaneous properties
+        self.time = 0.0 # s
+        self.deltaTime = global_vars.delta_time # s
+        self.kP = 30 # Proportional gain
+        self.kI = 0 # Integral gain
+        self.kD = 0 # Derivative gain
+        self.v = 0
+        self.vMax = 100 # per wheel
+
+
 
 
     def updateRovers(self):
         # Update the Leader Rover's state info
         self.Leader.setPosition()
+        self.Leader.setHeadingVector()
+        self.Leader.setCompassHeadingAngle()
+        self.Leader.setVelocity()
+        self.Leader.setSpeed()
+
         # Update the Follower Rover's state info
         self.Follower.setPosition()
-        self.Follower.setCompassHeading()
+        self.Follower.setHeadingVector()
+        self.Follower.setCompassHeadingAngle()
+        self.Follower.setVelocity()
+        self.Follower.setSpeed()
 
     def updateFollowerPose(self):
+        self.followerPrevPosition = self.Follower.getPrevPostion()
         self.followerPosition = self.Follower.getPosition()
-        self.followerCompassHeading = self.Follower.getCompassHeading()
+        self.followerHeadingVector = self.Follower.getHeadingVector()
+        self.followerCompassHeading = self.Follower.getCompassHeadingAngle()
+        self.followerVelocity = self.Follower.getVelocity()
+        self.followerSpeed = self.Follower.getSpeed()
         # Record values
         self.SimRecorder.record_follower_world_cs_x(self.followerPosition[0])
         self.SimRecorder.record_follower_world_cs_z(self.followerPosition[1])
         self.SimRecorder.record_follower_compass_heading(self.followerCompassHeading)
+        # TODO: Record Heading, Velocity, Speed values
 
 
     def updateLeaderPose(self):
+        self.leaderPrevPosition = self.Leader.getPrevPostion()
         self.leaderPosition = self.Leader.getPosition() # [x, z]
+        self.leaderHeadingVector = self.Leader.getHeadingVector()
+        self.leaderCompassHeadingAngle = self.Leader.getCompassHeadingAngle()
+        self.leaderVelocity = self.Leader.getVelocity()
+        self.leaderSpeed = self.Leader.getSpeed()
         # Record values
         self.SimRecorder.record_leader_world_cs_x(self.leaderPosition[0])
         self.SimRecorder.record_leader_world_cs_z(self.leaderPosition[1])
-
+        # TODO: Record Heading, Velocity, Speed values
 
     def updateFCSLeaderPose(self):
         # FF = FollowerFrame
@@ -64,37 +112,76 @@ class Supervisor:
         self.SimRecorder.record_follower_FT(FFRot)
 
 
+    def calculateErrorAngle(self):
 
-    def calculateErrorPose(self):
+        # record the old error
+        self.prevErrorAngle = self.errorAngle
+
         # Use the leader in the follower's reference frame
-        print("Follower in World CS: [" + str(self.followerPosition[0]) + ", " + str(self.followerPosition[1]) + "]")
-        print("Leader in World CS: [" + str(self.leaderPosition[0]) + ", " + str(self.leaderPosition[1]) + "]")
-        print("Leader in Follower CS: [" + str(self.FCSLeaderPosition[0]) + ", " + str(self.FCSLeaderPosition[1]) + "]" )
-        #self.errorHeading = (math.pi / 2) - math.atan2(self.FRFLeaderPosition[1], self.FRFLeaderPosition[0])
-        #self.errorHeading = math.atan2(self.FRFLeaderPosition[1], self.FRFLeaderPosition[0])
         xRelativeError = math.atan2(self.FCSLeaderPosition[1], self.FCSLeaderPosition[0])
-        print("xRelative Error Heading: " + str(math.degrees(xRelativeError)))
-        self.errorHeading = math_utils.xRelativeToCompass(xRelativeError)
-        print("Compass errorHeading is: " + str(math.degrees(self.errorHeading)))
+        # atan2 is [+/- pi] relative to positive x-axis. Convert to compass angle.
+        self.errorAngle = math_utils.xRelativeToCompass(xRelativeError)
+
+        # add error to Riemann sum of errors (~= to integral of errors)
+        self.errorAngleRiemannSum += self.errorAngle # note, multiplication by deltaTime factored into kI below
 
         # Record values
         self.SimRecorder.record_x_relative_error_heading(math.degrees(xRelativeError))
-        self.SimRecorder.record_compass_relative_error_heading(math.degrees(self.errorHeading))
+        self.SimRecorder.record_compass_relative_error_heading(math.degrees(self.errorAngle))
 
-    def calculateProportionalVelocity(self):
-        pass
+    def calculateErrorDistance(self):
+        # Record the previous error distance
+        self.prevErrorDistance = self.errorDistance
+        leaderFollowerDiff = math_utils.euclideanDist(self.leaderPosition, self.followerPosition)
+        self.errorDistance = leaderFollowerDiff - self.optimalDist
+
+        # Record values
+        self.SimRecorder.record_linear_distance_error(self.errorDistance)
+
+    def calculateAppropriateLinearVelocity(self):
+        logisticFuncMid = 1
+        logisticFuncGrowthRate = 10
+
+        coeff = 1
+
+        errorDeriv = (self.errorDistance - self.prevErrorDistance) / self.deltaTime
+        tanh_error = math_utils.tanh(errorDeriv)
+        print("tanh_error: " + str(tanh_error))
+        print("errorDeriv: " + str(errorDeriv))
+
+        self.v = (math_utils.logistic(self.errorDistance, mid=logisticFuncMid,
+                                     growthRate=logisticFuncGrowthRate) * self.vMax) + (tanh_error * abs(errorDeriv))
+
+        self.SimRecorder.record_logistic_function_mid(logisticFuncMid)
+        self.SimRecorder.record_logistic_function_growth_rate(logisticFuncGrowthRate)
+
+        # Record value
+        self.SimRecorder.record_v_without_angle_error(self.v)
+
 
     def calculateWheelVelocities(self):
-        self.ep = self.errorHeading
-        omega = self.kp * self.ep
-        print("OMEGA: " + str(omega))
-        v = self.vMax / math.sqrt(abs(omega) + 1)
-        print("v: " + str(v))
+        proportionalError = (self.kP / self.deltaTime) * self.errorAngle
+        integralError = (self.kI * self.deltaTime) * self.errorAngleRiemannSum
+        derivativeError = (self.kD / self.deltaTime) * (self.errorAngle - self.prevErrorAngle)
+        omega = proportionalError + integralError + derivativeError
+        #print("OMEGA: " + str(omega))
+        v = self.v / math.sqrt(abs(omega) + 1)
+        #print("v: " + str(v))
 
         lVelocity, rVelocity = self.uniToDiff(v, omega)
-        print("lVelocity is: " + str(lVelocity))
-        print("rVelocity is: " + str(rVelocity))
-        print("\n ------------------------------------- \n")
+        #print("lVelocity is: " + str(lVelocity))
+        #print("rVelocity is: " + str(rVelocity))
+        #print("\n ------------------------------------- \n")
+
+        # Bound the possible velocity values
+        if lVelocity < -100:
+            lVelocity = -100
+        elif lVelocity > 100:
+            lVelocity = 100
+        if rVelocity < -100:
+            rVelocity = -100
+        elif rVelocity > 100:
+            rVelocity = 100
 
         # Record values
         self.SimRecorder.record_omega(omega)
@@ -113,10 +200,31 @@ class Supervisor:
         self.updateLeaderPose()
         self.updateFCSLeaderPose()
         # Calculate the error between the Leader and Follower
-        self.calculateErrorPose()
+        self.calculateErrorAngle()
+        self.calculateErrorDistance()
+        self.calculateAppropriateLinearVelocity()
 
         lVelocity, rVelocity = self.calculateWheelVelocities()
-        self.Follower.accelerate(lVelocity, rVelocity)
+
+        if self.testing:
+            if self.time < 4:
+                self.Follower.accelerate(100, -100)
+            else:
+                self.Follower.accelerate(100,100)
+        else:
+            self.Follower.accelerate(lVelocity, rVelocity)
+
+        self.time += self.time + self.deltaTime
+
+        # Record constant values
+        # For flexibility of analysis, even if unlikely to change
+        self.SimRecorder.record_delta_time(self.deltaTime)
+        self.SimRecorder.record_proportional_gain(self.kP)
+        self.SimRecorder.record_integral_gain(self.kI)
+        self.SimRecorder.record_derivative_gain(self.kD)
+        self.SimRecorder.record_max_follower_distance(self.tooFarDist)
+        self.SimRecorder.record_min_follower_distance(self.tooCloseDist)
+        self.SimRecorder.record_optimal_follower_distance(self.optimalDist)
 
 
 

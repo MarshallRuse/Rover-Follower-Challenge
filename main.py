@@ -7,6 +7,7 @@ from Supervisor import *
 from analysis.simulation_recorder import *
 import Rover
 import commands
+import global_vars
 
 
 # Instantiate Leader, Follower Rovers (with their socket connections)
@@ -27,17 +28,18 @@ def main():
     SSI = SimulationSocketInterface()
     Leader, Follower = startSimulation(SSI)
     SimRecorder = SimulationRecorder()
-    supervisor = Supervisor(Leader, Follower, SimRecorder)
+    supervisor = Supervisor(Leader, Follower, SimRecorder, False)
 
     startTime = time.time()
     i = 0
-    while time.time() < startTime + 55:
-        print("TIME::: " + str(i) + " secs.")
+    while time.time() < startTime + 60:
+        #print("TIME::: " + str(i) + " secs.")
         SimRecorder.record_time(i)
         supervisor.execute()
-        i += 1
-        time.sleep(1)
+        i += global_vars.delta_time
+        time.sleep(global_vars.delta_time)
     SimRecorder.writeToCSV()
+    SimRecorder.appendGoalPerformanceMeasures()
 
 main()
 
