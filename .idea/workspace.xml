@@ -2,14 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6d5a035f-d1fa-4312-ad79-9151a447d94b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/analysis/goal_performance_analyzer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/global_vars.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/analysis/live_rover_tracking.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/analysis/post_run_analysis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_post_run_analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Rover.py" beforeDir="false" afterPath="$PROJECT_DIR$/Rover.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Supervisor.py" beforeDir="false" afterPath="$PROJECT_DIR$/Supervisor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/analysis/goal_performance_records/parameter_tuning.csv" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/goal_performance_records/parameter_tuning.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/analysis/simulation_recorder.py" beforeDir="false" afterPath="$PROJECT_DIR$/analysis/simulation_recorder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/global_vars.py" beforeDir="false" afterPath="$PROJECT_DIR$/global_vars.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/math_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/math_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/pip-selfcheck.json" beforeDir="false" afterPath="$PROJECT_DIR$/venv/pip-selfcheck.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,14 +21,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="555">
-              <caret line="46" selection-start-line="46" selection-end-line="46" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="135">
+              <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -46,8 +45,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Supervisor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1479">
-              <caret line="142" column="35" selection-start-line="142" selection-start-column="35" selection-end-line="142" selection-end-column="35" />
+            <state relative-caret-position="3375">
+              <caret line="230" column="38" selection-start-line="230" selection-start-column="38" selection-end-line="230" selection-end-column="38" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -59,12 +58,12 @@
         <entry file="file://$PROJECT_DIR$/global_vars.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="30">
-              <caret line="2" column="16" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
+              <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/analysis/goal_performance_analyzer.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="255">
@@ -76,10 +75,31 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/analysis/simulation_recorder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3885">
-              <caret line="262" column="50" selection-start-line="262" selection-start-column="50" selection-end-line="262" selection-end-column="50" />
+            <state relative-caret-position="2775">
+              <caret line="188" selection-start-line="188" selection-end-line="188" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_post_run_analysis.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="7" selection-start-line="7" selection-end-line="7" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/analysis/post_run_analysis.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="75">
+              <caret line="8" column="42" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -144,10 +164,13 @@
         <option value="$PROJECT_DIR$/analysis/performance_analyzer.py" />
         <option value="$PROJECT_DIR$/analysis/goal_performance_analyzer.py" />
         <option value="$PROJECT_DIR$/math_utils.py" />
-        <option value="$PROJECT_DIR$/analysis/simulation_recorder.py" />
-        <option value="$PROJECT_DIR$/main.py" />
-        <option value="$PROJECT_DIR$/global_vars.py" />
         <option value="$PROJECT_DIR$/Rover.py" />
+        <option value="$PROJECT_DIR$/analysis/live_rover_tracking.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/tests/test_post_run_analysis.py" />
+        <option value="$PROJECT_DIR$/global_vars.py" />
+        <option value="$PROJECT_DIR$/analysis/post_run_analysis.py" />
+        <option value="$PROJECT_DIR$/analysis/simulation_recorder.py" />
         <option value="$PROJECT_DIR$/Supervisor.py" />
       </list>
     </option>
@@ -164,7 +187,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -180,13 +202,13 @@
             <path>
               <item name="Automated Control" type="b2602c69:ProjectViewProjectNode" />
               <item name="Automated Control" type="462c0819:PsiDirectoryNode" />
-              <item name="analysis" type="462c0819:PsiDirectoryNode" />
-              <item name="goal_performance_records" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -274,9 +296,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test_post_run_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Automated Control" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/test_post_run_analysis.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.control" />
+        <item itemvalue="Python.test_post_run_analysis" />
         <item itemvalue="Python.test_math_utils" />
         <item itemvalue="Python.math_utils" />
       </list>
@@ -308,12 +352,12 @@
     <frame x="36" y="23" width="1225" height="776" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22147083" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.22485207" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.21052632" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.21052632" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.35818714" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -397,13 +441,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/analysis/live_rover_tracking.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-844">
+          <caret line="2" selection-start-line="2" selection-end-line="2" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="555">
-          <caret line="46" selection-start-line="46" selection-end-line="46" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="135">
+          <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
         </state>
       </provider>
     </entry>
@@ -417,12 +465,53 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Supervisor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3375">
+          <caret line="230" column="38" selection-start-line="230" selection-start-column="38" selection-end-line="230" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/global_vars.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis/goal_performance_analyzer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="38" selection-start-line="17" selection-start-column="38" selection-end-line="17" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/analysis/simulation_recorder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3885">
-          <caret line="262" column="50" selection-start-line="262" selection-start-column="50" selection-end-line="262" selection-end-column="50" />
+        <state relative-caret-position="2775">
+          <caret line="188" selection-start-line="188" selection-end-line="188" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_post_run_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/analysis/post_run_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="75">
+          <caret line="8" column="42" selection-start-line="8" selection-start-column="42" selection-end-line="8" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -444,30 +533,6 @@
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Supervisor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1479">
-          <caret line="142" column="35" selection-start-line="142" selection-start-column="35" selection-end-line="142" selection-end-column="35" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/global_vars.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="16" selection-start-line="2" selection-start-column="16" selection-end-line="2" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/analysis/goal_performance_analyzer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="38" selection-start-line="17" selection-start-column="38" selection-end-line="17" selection-end-column="38" />
         </state>
       </provider>
     </entry>

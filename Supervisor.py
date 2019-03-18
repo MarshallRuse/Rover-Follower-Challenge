@@ -8,7 +8,7 @@ import global_vars
 
 class Supervisor:
 
-    def __init__(self, Leader, Follower, Sim_Recorder, testing):
+    def __init__(self, Leader, Follower, Sim_Recorder, LiveTracker=None, PostRunAnalyzer=None, testing=False):
         configSettings = ConfigurationSettings().settings
 
         # Just for the purposes of testing
@@ -16,8 +16,8 @@ class Supervisor:
 
         # Leader properties
         self.Leader = Leader
-        self.leaderPosition = [2, 2]  # initial dummy placeholder
-        self.leaderPrevPosition = [2,2]
+        self.leaderPosition = [1, 15]  # based on previous analysis
+        self.leaderPrevPosition = [1,15]
         self.leaderHeadingVector = [2,2]
         self.leaderCompassHeadingAngle = 2  # initial dummy placeholder
         self.leaderVelocity = [2,2]
@@ -44,6 +44,12 @@ class Supervisor:
         # Simulation Recorder properties
         self.SimRecorder = Sim_Recorder
 
+        # Live Tracker properties
+        self.LiveTracker = LiveTracker
+
+        # Post Run Analysis properties
+        self.PostRunAnalysis = PostRunAnalyzer
+
         # Simulation Goal properties
         self.tooFarDist = int(configSettings["tooFar"])
         self.tooCloseDist = int(configSettings["tooClose"])
@@ -52,12 +58,14 @@ class Supervisor:
         # Miscellaneous properties
         self.time = 0.0 # s
         self.deltaTime = global_vars.delta_time # s
+            # Angular Velocity
         self.kP = 30 # Proportional gain
-        self.kI = 0 # Integral gain
-        self.kD = 0 # Derivative gain
+        self.kI = 0.5 # Integral gain
+        self.kD = 0.1 # Derivative gain
+            # Linear Velocity
         self.v = 0
         self.vMax = 100 # per wheel
-
+        self.linVelErrDerivCoeff = 2
 
 
 
@@ -142,15 +150,13 @@ class Supervisor:
         logisticFuncMid = 1
         logisticFuncGrowthRate = 10
 
-        coeff = 1
-
         errorDeriv = (self.errorDistance - self.prevErrorDistance) / self.deltaTime
         tanh_error = math_utils.tanh(errorDeriv)
-        print("tanh_error: " + str(tanh_error))
-        print("errorDeriv: " + str(errorDeriv))
+        #print("tanh_error: " + str(tanh_error))
+        #print("errorDeriv: " + str(errorDeriv))
 
         self.v = (math_utils.logistic(self.errorDistance, mid=logisticFuncMid,
-                                     growthRate=logisticFuncGrowthRate) * self.vMax) + (tanh_error * abs(errorDeriv))
+                                     growthRate=logisticFuncGrowthRate) * self.vMax) + (self.linVelErrDerivCoeff * tanh_error * abs(errorDeriv))
 
         self.SimRecorder.record_logistic_function_mid(logisticFuncMid)
         self.SimRecorder.record_logistic_function_growth_rate(logisticFuncGrowthRate)
@@ -222,10 +228,24 @@ class Supervisor:
         self.SimRecorder.record_proportional_gain(self.kP)
         self.SimRecorder.record_integral_gain(self.kI)
         self.SimRecorder.record_derivative_gain(self.kD)
+        self.SimRecorder.record_lin_val_err_deriv_coeff(self.linVelErrDerivCoeff)
         self.SimRecorder.record_max_follower_distance(self.tooFarDist)
         self.SimRecorder.record_min_follower_distance(self.tooCloseDist)
         self.SimRecorder.record_optimal_follower_distance(self.optimalDist)
 
+        # Send Rover coordinates to LiveTracker
+        if self.LiveTracker != None:
+            self.LiveTracker.updateLeaderCoords(self.leaderPosition[0], self.leaderPosition[1])
+            self.LiveTracker.updateFollowerCoords(self.followerPosition[0], self.followerPosition[1])
+            if self.LiveTracker.started == False:
+                self.LiveTracker.started = True
+                self.LiveTracker.start()
+
+        if self.PostRunAnalysis != None:
+            self.PostRunAnalysis.updateLeaderCoords(self.leaderPosition[0], self.leaderPosition[1])
+            self.PostRunAnalysis.updateFollowerCoords(self.followerPosition[0], self.followerPosition[1])
+            self.PostRunAnalysis.updateTime()
+            self.PostRunAnalysis.updateGoalDistances()
 
 
     def uniToDiff(self, v, omega):

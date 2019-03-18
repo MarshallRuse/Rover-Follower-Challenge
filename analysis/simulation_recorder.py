@@ -59,6 +59,7 @@ class SimulationRecorder:
                         "derivative_gain",
                         "logistic_function_mid",
                         "logistic_function_growth_rate",
+                        "lin_val_err_deriv_coeff",
                         "max_follower_distance",
                         "min_follower_distance",
                         "optimal_follower_distance"]
@@ -93,6 +94,7 @@ class SimulationRecorder:
         self.derivative_gain = []
         self.logistic_function_mid = []
         self.logistic_function_growth_rate = []
+        self.lin_val_err_deriv_coeff = []
         self.max_follower_distance = []
         self.min_follower_distance = []
         self.optimal_follower_distance = []
@@ -185,6 +187,9 @@ class SimulationRecorder:
     def record_logistic_function_growth_rate(self, val):
         self.logistic_function_growth_rate.append(val)
 
+    def record_lin_val_err_deriv_coeff(self, val):
+        self.lin_val_err_deriv_coeff.append(val)
+
     def record_max_follower_distance(self, val):
         self.max_follower_distance.append(val)
 
@@ -232,6 +237,7 @@ class SimulationRecorder:
                     "derivative_gain": self.derivative_gain[i],
                     "logistic_function_mid": self.logistic_function_mid[i],
                     "logistic_function_growth_rate": self.logistic_function_growth_rate[i],
+                    "lin_val_err_deriv_coeff" : self.lin_val_err_deriv_coeff[i],
                     "max_follower_distance": self.max_follower_distance[i],
                     "min_follower_distance": self.min_follower_distance[i],
                     "optimal_follower_distance": self.optimal_follower_distance[i]
@@ -255,6 +261,7 @@ class SimulationRecorder:
                           "derivative_gain",
                           "logistic_function_mid",
                           "logistic_function_growth_rate",
+                          "lin_val_err_deriv_coeff",
                           "follower_too_far_percent",
                           "follower_too_close_percent",
                           "follower_goal_dist_percent"]
@@ -266,6 +273,7 @@ class SimulationRecorder:
                 "derivative_gain" : self.derivative_gain[0],
                 "logistic_function_mid" : self.logistic_function_mid[0],
                 "logistic_function_growth_rate" : self.logistic_function_growth_rate[0],
+                "lin_val_err_deriv_coeff" : self.lin_val_err_deriv_coeff[0],
                 "follower_too_far_percent" : self.too_far_percentage,
                 "follower_too_close_percent" : self.too_close_percentage,
                 "follower_goal_dist_percent" : self.goal_distance_percentage

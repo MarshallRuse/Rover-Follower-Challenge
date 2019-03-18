@@ -5,6 +5,8 @@ import time
 from simulation_socket_interface import *
 from Supervisor import *
 from analysis.simulation_recorder import *
+from analysis.live_rover_tracking import *
+from analysis.post_run_analysis import *
 import Rover
 import commands
 import global_vars
@@ -28,7 +30,10 @@ def main():
     SSI = SimulationSocketInterface()
     Leader, Follower = startSimulation(SSI)
     SimRecorder = SimulationRecorder()
-    supervisor = Supervisor(Leader, Follower, SimRecorder, False)
+    #LiveTracker = LiveRoverTracker()
+    PostRunAnalysis = PostRunAnalyzer()
+
+    supervisor = Supervisor(Leader, Follower, SimRecorder, PostRunAnalyzer=PostRunAnalysis)
 
     startTime = time.time()
     i = 0
@@ -40,6 +45,7 @@ def main():
         time.sleep(global_vars.delta_time)
     SimRecorder.writeToCSV()
     SimRecorder.appendGoalPerformanceMeasures()
+    PostRunAnalysis.revealAnimatedPlot()
 
 main()
 
