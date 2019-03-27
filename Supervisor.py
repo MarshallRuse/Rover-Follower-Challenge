@@ -118,6 +118,7 @@ class Supervisor:
         self.SimRecorder.record_leader_follower_cs_x(self.FCSLeaderPosition[0])
         self.SimRecorder.record_leader_follower_cs_z(self.FCSLeaderPosition[1])
         self.SimRecorder.record_follower_FT(FFRot)
+        self.PostRunAnalysis.updateFollowerFrameTrans(FFRot)
 
 
     def calculateErrorAngle(self):

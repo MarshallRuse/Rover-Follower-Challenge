@@ -1,3 +1,3 @@
 
 
-delta_time = 0.25 # second
+delta_time = 0.1 # second

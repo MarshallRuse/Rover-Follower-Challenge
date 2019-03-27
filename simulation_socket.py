@@ -12,7 +12,12 @@ class SimulationSocket:
 
     def connectSocket(self):
         connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        connection.connect((self.host,self.port ))
+        try:
+            connection.connect((self.host,self.port ))
+            print("Connection established for IP: {}, port: {}".format(self.host, self.port))
+        except Exception as e:
+            print("Connection FAILED for IP: {}, port: {}".format(self.host, self.port))
+            print(e)
         return connection
 
     def sendAndReceive(self, message):

@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import math_utils
@@ -18,6 +19,10 @@ class PostRunAnalyzer:
         self.followerZs = [1]
         self.animatedFollowerXs = [1]
         self.animatedFollowerZs = [15]
+        self.follower_FT_R11 = []
+        self.follower_FT_R21 = []
+        self.follower_FT_R12 = []
+        self.follower_FT_R22 = []
 
         self.currentTime = 0
         self.times = [0]
@@ -39,6 +44,12 @@ class PostRunAnalyzer:
     def updateFollowerCoords(self, followerX, followerZ):
         self.followerXs.append(followerX)
         self.followerZs.append(followerZ)
+
+    def updateFollowerFrameTrans(self, FT):
+        self.follower_FT_R11.append(FT[0][0])
+        self.follower_FT_R21.append(FT[1][0])
+        self.follower_FT_R12.append(FT[0][1])
+        self.follower_FT_R22.append(FT[1][1])
 
     def updateTime(self):
         self.currentTime += 1
@@ -79,6 +90,11 @@ class PostRunAnalyzer:
 
         self.animatedFollowerXs = self.followerXs[:stepForward]
         self.animatedFollowerZs = self.followerZs[:stepForward]
+        self.animatedFollower_FT_R11 = self.follower_FT_R11[:stepForward]
+        self.animatedFollower_FT_R21 = self.follower_FT_R21[:stepForward]
+        self.animatedFollower_FT_R12 = self.follower_FT_R12[:stepForward]
+        self.animatedFollower_FT_R22 = self.follower_FT_R22[:stepForward]
+
         self.animatedLeaderXs = self.leaderXs[:stepForward]
         self.animatedLeaderZs = self.leaderZs[:stepForward]
 
@@ -111,6 +127,40 @@ class PostRunAnalyzer:
                                                                       'fontweight': 'bold'})
         self.axes[0].set_ylabel('z', fontdict = {'fontsize':'small',
                                                                       'fontweight': 'bold'})
+
+        # Add circles for goal distances from Leader
+        minCircle = plt.Circle((self.animatedLeaderXs[-1], self.animatedLeaderZs[-1]),12, color="red", fill=False)
+        maxCircle = plt.Circle((self.animatedLeaderXs[-1], self.animatedLeaderZs[-1]),15, color="red",fill=False)
+        optimalCircle = plt.Circle((self.animatedLeaderXs[-1], self.animatedLeaderZs[-1]),13.5, color="green",fill=False)
+        self.axes[0].add_artist(minCircle)
+        self.axes[0].add_artist(maxCircle)
+        self.axes[0].add_artist(optimalCircle)
+
+        FT_R11 = self.animatedFollower_FT_R11[-1]
+        FT_R21 = self.animatedFollower_FT_R21[-1]
+        FT_R12 = self.animatedFollower_FT_R12[-1]
+        FT_R22 = self.animatedFollower_FT_R22[-1]
+
+        followerFT = np.array([[FT_R11, FT_R12], [FT_R21, FT_R22]])
+        invFollowerFT = np.linalg.inv(followerFT)
+
+        basis = np.array([[20, 0], [0, 20]])
+        rotatedBasis = invFollowerFT.dot(basis)
+
+        followerPos = np.array([self.animatedFollowerXs[-1], self.animatedFollowerZs[-1]])
+        # Find the end points for the follower's own axes IN WORLD CS
+        # Translate the basis to the Follower's position IN WORLD CS
+        followerXAxEP1 = followerPos - rotatedBasis[:, 0]
+        followerXAxEP2 = followerPos + rotatedBasis[:, 0]
+        followerZAxEP1 = followerPos - rotatedBasis[:, 1]
+        followerZAxEP2 = followerPos + rotatedBasis[:, 1]
+
+        # x-axis
+        self.axes[0].plot(np.array([followerXAxEP1[0], followerXAxEP2[0]]), np.array([followerXAxEP1[1], followerXAxEP2[1]]),
+                          color='b')
+        # z-axis
+        self.axes[0].plot(np.array([followerZAxEP1[0], followerZAxEP2[0]]), np.array([followerZAxEP1[1], followerZAxEP2[1]]),
+                          color='b')
 
         self.axes[1].set_xlim(0, self.timeElapsed)
         self.axes[1].set_ylim(-5, 5)
