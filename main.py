@@ -34,7 +34,7 @@ def main():
     SimRecorder = SimulationRecorder()
     #LiveTracker = LiveRoverTracker()
     PostRunAnalysis = PostRunAnalyzer()
-
+    print("Gets here too")
     supervisor = Supervisor(Leader, Follower, SimRecorder, PostRunAnalyzer=PostRunAnalysis)
 
     startTime = time.time()

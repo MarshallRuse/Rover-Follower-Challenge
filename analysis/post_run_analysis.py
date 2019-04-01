@@ -105,10 +105,19 @@ class PostRunAnalyzer:
         self.axes[1].clear()
 
 
-        self.axes[0].scatter(self.animatedLeaderXs, self.animatedLeaderZs, c=self.times[:stepForward], cmap="Reds",
-                          label="Leader")
-        self.axes[0].scatter(self.animatedFollowerXs, self.animatedFollowerZs, c=self.times[:stepForward], cmap="Blues",
-                          label="Follower")
+        #self.axes[0].scatter(self.animatedLeaderXs, self.animatedLeaderZs, c=self.times[:stepForward], cmap="Reds",
+        #                  label="Leader")
+        self.axes[0].scatter(self.animatedLeaderXs[:(stepForward-1)], self.animatedLeaderZs[:(stepForward - 1)], facecolors='none',
+                             edgecolors='red')
+        self.axes[0].scatter(self.animatedLeaderXs[-1], self.animatedLeaderZs[-1],
+                             facecolors='red',edgecolors='red', label="Leader")
+        #self.axes[0].scatter(self.animatedFollowerXs, self.animatedFollowerZs, c=self.times[:stepForward], cmap="Blues",
+        #                  label="Follower")
+        self.axes[0].scatter(self.animatedFollowerXs[:(stepForward - 1)], self.animatedFollowerZs[:(stepForward - 1)],
+                             facecolors='none',
+                             edgecolors='blue')
+        self.axes[0].scatter(self.animatedFollowerXs[-1], self.animatedFollowerZs[-1],
+                             facecolors='blue', edgecolors='blue', label="Follower")
 
         ylims = self.axes[0].get_ylim()
         xlims = self.axes[0].get_xlim()
