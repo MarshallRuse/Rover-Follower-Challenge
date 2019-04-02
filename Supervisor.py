@@ -65,7 +65,7 @@ class Supervisor:
             # Linear Velocity
         self.v = 0
         self.vMax = 100 # per wheel
-        self.linVelErrDerivCoeff = 2
+        self.linVelErrDerivCoeff = 3
 
 
 

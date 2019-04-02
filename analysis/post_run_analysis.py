@@ -115,7 +115,8 @@ class PostRunAnalyzer:
         #                  label="Follower")
         self.axes[0].scatter(self.animatedFollowerXs[:(stepForward - 1)], self.animatedFollowerZs[:(stepForward - 1)],
                              facecolors='none',
-                             edgecolors='blue')
+                             edgecolors='blue',
+                             alpha=0.5)
         self.axes[0].scatter(self.animatedFollowerXs[-1], self.animatedFollowerZs[-1],
                              facecolors='blue', edgecolors='blue', label="Follower")
 
