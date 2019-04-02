@@ -11,9 +11,10 @@ from socket_communication_errors import *
 # The Rover class
 class Rover:
 
-    def __init__(self, socketConn):
+    def __init__(self, socketConn, name):
 
         self.conn = socketConn
+        self.name = name
         self.WHEEL_RADIUS = 0.5 # m, based off of Curiosity Rover specs
         self.WHEEL_AXLE_LENGTH = 2.8 # m
         self.speed = 0
@@ -41,8 +42,8 @@ class Rover:
 
 class Leader(Rover):
 
-    def __init__(self, socketConn):
-        super().__init__(socketConn)
+    def __init__(self, socketConn, name):
+        super().__init__(socketConn, name)
 
 
     def setPosition(self):
@@ -100,15 +101,15 @@ class Leader(Rover):
 class Follower(Rover):
 
 
-    def __init__(self, socketConn, leader):
-        super().__init__(socketConn)
+    def __init__(self, socketConn, name, leader):
+        super().__init__(socketConn, name)
         ### Self Observing Attributes ###
         self.Leader = leader
 
     #### Self Observing Methods ####
     def setPosition(self):
         self.prevPosition = self.position
-        GPSString = self.conn.sendAndReceive(commands.findRover())
+        GPSString = self.conn.sendAndReceive(commands.findRover(self.name))
         try:
             if len(GPSString) > 0:
                 positions = GPSString.split(',')[1:]
@@ -116,7 +117,7 @@ class Follower(Rover):
                 zPos = float(positions[1][:-2])  # -2 b/c of the newline character
                 self.position = [xPos, zPos]
             else:
-                raise RoverCoordinatesReturnError('Follower GPS Coordinates not returned by socket')
+                raise RoverCoordinatesReturnError(self.name + ' GPS Coordinates not returned by socket')
         except RoverCoordinatesReturnError as e:
             print(e)
 
@@ -127,12 +128,12 @@ class Follower(Rover):
 
     def setCompassHeadingAngle(self):
         try:
-            CompassString = self.conn.sendAndReceive(commands.roverCompassDir())
+            CompassString = self.conn.sendAndReceive(commands.roverCompassDir(self.name))
             if len(CompassString) > 0:
                 compassAngle = CompassString.split(',')
                 self.compassHeading = float(compassAngle[1][:-2])
             else:
-                raise RoverCompassReturnError('Follower Compass Angle not returned by socket')
+                raise RoverCompassReturnError(self.name + ' Compass Angle not returned by socket')
         except RoverCompassReturnError as e:
             print(e)
 
@@ -170,4 +171,4 @@ class Follower(Rover):
     def accelerate(self, leftWheel, rightWheel):
         leftWheel = round(leftWheel)
         rightWheel = round(rightWheel)
-        self.conn.sendOnly(commands.setLRPower(leftWheel, rightWheel))
+        self.conn.sendOnly(commands.setLRPower(self.name,leftWheel, rightWheel))

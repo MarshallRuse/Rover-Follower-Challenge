@@ -8,7 +8,7 @@ import global_vars
 
 class Supervisor:
 
-    def __init__(self, Leader, Follower, Sim_Recorder, LiveTracker=None, PostRunAnalyzer=None, testing=False):
+    def __init__(self, Leader, Follower, LeaderNum, FollowerNum, Sim_Recorder=None, LiveTracker=None, PostRunAnalyzer=None, testing=False):
         configSettings = ConfigurationSettings().settings
 
         # Just for the purposes of testing
@@ -16,6 +16,7 @@ class Supervisor:
 
         # Leader properties
         self.Leader = Leader
+        self.LeaderNum = LeaderNum #For use with PostRunAnalyzer
         self.leaderPosition = [1, 15]  # based on previous analysis
         self.leaderPrevPosition = [1,15]
         self.leaderHeadingVector = [2,2]
@@ -27,6 +28,7 @@ class Supervisor:
 
         # Follower properties
         self.Follower = Follower
+        self.FollowerNum = FollowerNum #For use with PostRunAnalyzer
         self.followerPosition = [1, 1]  # initial dummy placeholder
         self.followerPrevPosition = [1,1]
         self.followerHeadingVector = [1,1]
@@ -92,9 +94,11 @@ class Supervisor:
         self.followerVelocity = self.Follower.getVelocity()
         self.followerSpeed = self.Follower.getSpeed()
         # Record values
-        self.SimRecorder.record_follower_world_cs_x(self.followerPosition[0])
-        self.SimRecorder.record_follower_world_cs_z(self.followerPosition[1])
-        self.SimRecorder.record_follower_compass_heading(self.followerCompassHeading)
+
+        if self.SimRecorder != None:
+            self.SimRecorder.record_follower_world_cs_x(self.followerPosition[0])
+            self.SimRecorder.record_follower_world_cs_z(self.followerPosition[1])
+            self.SimRecorder.record_follower_compass_heading(self.followerCompassHeading)
         # TODO: Record Heading, Velocity, Speed values
 
 
@@ -106,8 +110,9 @@ class Supervisor:
         self.leaderVelocity = self.Leader.getVelocity()
         self.leaderSpeed = self.Leader.getSpeed()
         # Record values
-        self.SimRecorder.record_leader_world_cs_x(self.leaderPosition[0])
-        self.SimRecorder.record_leader_world_cs_z(self.leaderPosition[1])
+        if self.SimRecorder != None:
+            self.SimRecorder.record_leader_world_cs_x(self.leaderPosition[0])
+            self.SimRecorder.record_leader_world_cs_z(self.leaderPosition[1])
         # TODO: Record Heading, Velocity, Speed values
 
     def updateFCSLeaderPose(self):
@@ -115,10 +120,12 @@ class Supervisor:
         FFRot, FFTrans = math_utils.followerFrameTransformation(self.followerCompassHeading, self.followerPosition)
         self.FCSLeaderPosition = math_utils.leaderInFollowerFrame(FFRot, FFTrans, self.leaderPosition)
         # Record values
-        self.SimRecorder.record_leader_follower_cs_x(self.FCSLeaderPosition[0])
-        self.SimRecorder.record_leader_follower_cs_z(self.FCSLeaderPosition[1])
-        self.SimRecorder.record_follower_FT(FFRot)
-        self.PostRunAnalysis.updateFollowerFrameTrans(FFRot)
+        if self.SimRecorder != None:
+            self.SimRecorder.record_leader_follower_cs_x(self.FCSLeaderPosition[0])
+            self.SimRecorder.record_leader_follower_cs_z(self.FCSLeaderPosition[1])
+            self.SimRecorder.record_follower_FT(FFRot)
+        if self.PostRunAnalysis != None:
+            self.PostRunAnalysis.updateFollowerFrameTrans(self.FollowerNum, FFRot)
 
 
     def calculateErrorAngle(self):
@@ -135,8 +142,9 @@ class Supervisor:
         self.errorAngleRiemannSum += self.errorAngle # note, multiplication by deltaTime factored into kI below
 
         # Record values
-        self.SimRecorder.record_x_relative_error_heading(math.degrees(xRelativeError))
-        self.SimRecorder.record_compass_relative_error_heading(math.degrees(self.errorAngle))
+        if self.SimRecorder != None:
+            self.SimRecorder.record_x_relative_error_heading(math.degrees(xRelativeError))
+            self.SimRecorder.record_compass_relative_error_heading(math.degrees(self.errorAngle))
 
     def calculateErrorDistance(self):
         # Record the previous error distance
@@ -145,7 +153,8 @@ class Supervisor:
         self.errorDistance = leaderFollowerDiff - self.optimalDist
 
         # Record values
-        self.SimRecorder.record_linear_distance_error(self.errorDistance)
+        if self.SimRecorder != None:
+            self.SimRecorder.record_linear_distance_error(self.errorDistance)
 
     def calculateAppropriateLinearVelocity(self):
         logisticFuncMid = 1
@@ -159,11 +168,12 @@ class Supervisor:
         self.v = (math_utils.logistic(self.errorDistance, mid=logisticFuncMid,
                                      growthRate=logisticFuncGrowthRate) * self.vMax) + (self.linVelErrDerivCoeff * tanh_error * abs(errorDeriv))
 
-        self.SimRecorder.record_logistic_function_mid(logisticFuncMid)
-        self.SimRecorder.record_logistic_function_growth_rate(logisticFuncGrowthRate)
+        if self.SimRecorder != None:
+            self.SimRecorder.record_logistic_function_mid(logisticFuncMid)
+            self.SimRecorder.record_logistic_function_growth_rate(logisticFuncGrowthRate)
 
-        # Record value
-        self.SimRecorder.record_v_without_angle_error(self.v)
+            # Record value
+            self.SimRecorder.record_v_without_angle_error(self.v)
 
 
     def calculateWheelVelocities(self):
@@ -191,11 +201,12 @@ class Supervisor:
             rVelocity = 100
 
         # Record values
-        self.SimRecorder.record_omega(omega)
-        self.SimRecorder.record_v(v)
-        self.SimRecorder.record_v_max(self.vMax)
-        self.SimRecorder.record_left_wheel_velocity(lVelocity)
-        self.SimRecorder.record_right_wheel_velocity(rVelocity)
+        if self.SimRecorder != None:
+            self.SimRecorder.record_omega(omega)
+            self.SimRecorder.record_v(v)
+            self.SimRecorder.record_v_max(self.vMax)
+            self.SimRecorder.record_left_wheel_velocity(lVelocity)
+            self.SimRecorder.record_right_wheel_velocity(rVelocity)
 
         return lVelocity, rVelocity
 
@@ -225,14 +236,15 @@ class Supervisor:
 
         # Record constant values
         # For flexibility of analysis, even if unlikely to change
-        self.SimRecorder.record_delta_time(self.deltaTime)
-        self.SimRecorder.record_proportional_gain(self.kP)
-        self.SimRecorder.record_integral_gain(self.kI)
-        self.SimRecorder.record_derivative_gain(self.kD)
-        self.SimRecorder.record_lin_val_err_deriv_coeff(self.linVelErrDerivCoeff)
-        self.SimRecorder.record_max_follower_distance(self.tooFarDist)
-        self.SimRecorder.record_min_follower_distance(self.tooCloseDist)
-        self.SimRecorder.record_optimal_follower_distance(self.optimalDist)
+        if self.SimRecorder != None:
+            self.SimRecorder.record_delta_time(self.deltaTime)
+            self.SimRecorder.record_proportional_gain(self.kP)
+            self.SimRecorder.record_integral_gain(self.kI)
+            self.SimRecorder.record_derivative_gain(self.kD)
+            self.SimRecorder.record_lin_val_err_deriv_coeff(self.linVelErrDerivCoeff)
+            self.SimRecorder.record_max_follower_distance(self.tooFarDist)
+            self.SimRecorder.record_min_follower_distance(self.tooCloseDist)
+            self.SimRecorder.record_optimal_follower_distance(self.optimalDist)
 
         # Send Rover coordinates to LiveTracker
         if self.LiveTracker != None:
@@ -243,17 +255,20 @@ class Supervisor:
                 self.LiveTracker.start()
 
         if self.PostRunAnalysis != None:
-            self.PostRunAnalysis.updateLeaderCoords(self.leaderPosition[0], self.leaderPosition[1])
-            self.PostRunAnalysis.updateFollowerCoords(self.followerPosition[0], self.followerPosition[1])
-            self.PostRunAnalysis.updateTime()
-            self.PostRunAnalysis.updateGoalDistances()
+            if self.LeaderNum == 0:
+                self.PostRunAnalysis.updateLeaderCoords(self.leaderPosition[0], self.leaderPosition[1])
+            self.PostRunAnalysis.updateFollowerCoords(self.FollowerNum, self.followerPosition[0], self.followerPosition[1])
+            if self.LeaderNum == 0:
+                self.PostRunAnalysis.updateTime()
+            self.PostRunAnalysis.updateGoalDistances(self.FollowerNum)
 
 
     def uniToDiff(self, v, omega):
         radius = self.Follower.WHEEL_RADIUS
         wheelBase = self.Follower.WHEEL_AXLE_LENGTH
-        self.SimRecorder.record_follower_wheel_radius(radius)
-        self.SimRecorder.record_follower_axle_length(wheelBase)
+        if self.SimRecorder != None:
+            self.SimRecorder.record_follower_wheel_radius(radius)
+            self.SimRecorder.record_follower_axle_length(wheelBase)
 
         # The +/- were actually inverted from convention, and that
         # seemed to stop the heading error balancing on -180/180

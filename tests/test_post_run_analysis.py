@@ -1,18 +1,36 @@
-
+import pandas as pd
 from analysis.post_run_analysis import *
 
-PostRunAnalysis = PostRunAnalyzer()
+testData = pd.read_csv('post_run_testing_sample_data.csv')
 
-leaderXs = [1,1.2,1.3,1.4,1.6,1.7,2,2.5,3,3.5,3.5,3.5]
-leaderZs = [1,1.2,1.3,1.4,1.6,1.7,2,2.5,3,3.5,3.5,3.5]
+PostRunAnalysis = PostRunAnalyzer(4)
 
-followerXs = [1,1.2,1.3,1.4,1.6,1.7,2,2.5,3,3.5,3.5,3.5]
-followerZs = [1,1.2,1.3,1.4,1.6,1.7,2,2.5,3,3.5,3.5,3.5]
+leaderXs = list(testData['leader_world_cs_x'])
+leaderZs = list(testData['leader_world_cs_z'])
+
+followerXs = list(testData['follower_world_cs_x'])
+followerZs = list(testData['follower_world_cs_z'])
+
+follower2Xs = list(testData['follower_2_world_cs_x'])
+follower2Zs = list(testData['follower_2_world_cs_z'])
+
+follower3Xs = list(testData['follower_3_world_cs_x'])
+follower3Zs = list(testData['follower_3_world_cs_z'])
+
+follower4Xs = list(testData['follower_4_world_cs_x'])
+follower4Zs = list(testData['follower_4_world_cs_z'])
 
 for i in range(0,len(leaderXs)):
     PostRunAnalysis.updateLeaderCoords(leaderXs[i],leaderZs[i])
-    PostRunAnalysis.updateFollowerCoords(0.5 * followerXs[i], 0.5* followerZs[i])
+    PostRunAnalysis.updateFollowerCoords(1,followerXs[i], followerZs[i])
+    PostRunAnalysis.updateFollowerCoords(2,follower2Xs[i], follower2Zs[i])
+    PostRunAnalysis.updateFollowerCoords(3,follower3Xs[i], follower3Zs[i])
+    PostRunAnalysis.updateFollowerCoords(4,follower4Xs[i], follower4Zs[i])
+
     PostRunAnalysis.updateTime()
-    PostRunAnalysis.updateGoalDistances()
+    PostRunAnalysis.updateGoalDistances(1)
+    PostRunAnalysis.updateGoalDistances(2)
+    PostRunAnalysis.updateGoalDistances(3)
+    PostRunAnalysis.updateGoalDistances(4)
 
 PostRunAnalysis.revealAnimatedPlot()
