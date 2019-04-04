@@ -62,8 +62,8 @@ class Supervisor:
         self.deltaTime = global_vars.delta_time # s
             # Angular Velocity
         self.kP = 30 # Proportional gain
-        self.kI = 0.5 # Integral gain
-        self.kD = 0.5 # Derivative gain
+        self.kI = 0.1 # Integral gain
+        self.kD = 0.1 # Derivative gain
             # Linear Velocity
         self.v = 0
         self.vMax = 100 # per wheel
@@ -162,8 +162,6 @@ class Supervisor:
 
         errorDeriv = (self.errorDistance - self.prevErrorDistance) / self.deltaTime
         tanh_error = math_utils.tanh(errorDeriv)
-        #print("tanh_error: " + str(tanh_error))
-        #print("errorDeriv: " + str(errorDeriv))
 
         self.v = (math_utils.logistic(self.errorDistance, mid=logisticFuncMid,
                                      growthRate=logisticFuncGrowthRate) * self.vMax) + (self.linVelErrDerivCoeff * tanh_error * abs(errorDeriv))
@@ -181,14 +179,9 @@ class Supervisor:
         integralError = (self.kI * self.deltaTime) * self.errorAngleRiemannSum
         derivativeError = (self.kD / self.deltaTime) * (self.errorAngle - self.prevErrorAngle)
         omega = proportionalError + integralError + derivativeError
-        #print("OMEGA: " + str(omega))
         v = self.v / math.sqrt(abs(omega) + 1)
-        #print("v: " + str(v))
 
         lVelocity, rVelocity = self.uniToDiff(v, omega)
-        #print("lVelocity is: " + str(lVelocity))
-        #print("rVelocity is: " + str(rVelocity))
-        #print("\n ------------------------------------- \n")
 
         # Bound the possible velocity values
         if lVelocity < -100:

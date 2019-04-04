@@ -1,7 +1,4 @@
-import math
 import time
-
-
 from simulation_socket_interface import *
 from Supervisor import *
 from analysis.simulation_recorder import *
@@ -37,7 +34,6 @@ def main():
     startTime = time.time()
     i = 0
     while time.time() < startTime + 60:
-        #print("TIME::: " + str(i) + " secs.")
         SimRecorder.record_time(i)
         supervisor0_1.execute()
         supervisor1_2.execute()
