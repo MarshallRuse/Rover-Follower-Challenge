@@ -67,7 +67,7 @@ class PostRunAnalyzer:
             self.animatedFollower_FT_R22s.append([])
 
 
-        self.currentTime = 0
+        self.currentTime = -1 # will be incremented to 0 immediately on first call
         self.times = [0]
         self.timesSec = [0]
         self.timeElapsed = 0
@@ -109,14 +109,19 @@ class PostRunAnalyzer:
         self.follower_FT_R22s[followerNum].append(FT[1][1])
 
     def updateTime(self):
-        self.currentTime += 1
+        self.currentTime += self.numFollowers
         self.times.append(self.currentTime)
         self.timesSec.append(self.currentTime * global_vars.delta_time)
 
+
     def updateGoalDistances(self, followerNum):
         followerNum -= 1
-        dist = math_utils.euclideanDist([self.leaderXs[-1],self.leaderZs[-1]],
-                                        [self.followerXs[followerNum][-1],self.followerZs[followerNum][-1]])
+        if followerNum == 0:
+            dist = math_utils.euclideanDist([self.leaderXs[-1],self.leaderZs[-1]],
+                                            [self.followerXs[followerNum][-1],self.followerZs[followerNum][-1]])
+        else:
+            dist = math_utils.euclideanDist([self.followerXs[followerNum - 1][-1], self.followerZs[followerNum - 1][-1]],
+                                            [self.followerXs[followerNum][-1], self.followerZs[followerNum][-1]])
         if dist > 15:
             self.goalDistanceFlags[followerNum].append(1)
         elif dist < 12:
@@ -161,7 +166,7 @@ class PostRunAnalyzer:
             self.animatedLeaderZs = self.leaderZs[:stepForward]
 
             self.animatedDeviances[follNum] = self.goalDeviances[follNum][:stepForward]
-            self.animatedTimes = self.timesSec[:stepForward]
+            self.animatedTimes = self.timesSec[:stepForward ]
 
         self.axes[0].clear()
         self.axes[1].clear()

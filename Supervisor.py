@@ -63,11 +63,11 @@ class Supervisor:
             # Angular Velocity
         self.kP = 30 # Proportional gain
         self.kI = 0.5 # Integral gain
-        self.kD = 0.1 # Derivative gain
+        self.kD = 0.5 # Derivative gain
             # Linear Velocity
         self.v = 0
         self.vMax = 100 # per wheel
-        self.linVelErrDerivCoeff = 2
+        self.linVelErrDerivCoeff = 3
 
 
 
