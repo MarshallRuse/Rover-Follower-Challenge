@@ -7,7 +7,7 @@ import global_vars
 class PostRunAnalyzer:
 
     def __init__(self):
-        self.fig = plt.figure(figsize=[8,7])
+        self.fig = plt.figure(figsize=[7,6])
         self.axes = self.fig.subplots(nrows=2, ncols=1, gridspec_kw={'height_ratios': [3, 1]})
 
         self.leaderXs = [1]

@@ -20,9 +20,7 @@ def startSimulation(SSI):
     # A follower must have someone to follow
     Leader = Rover.Leader(SSI.observationSocket)
     Follower = Rover.Follower(SSI.controlSocket, Leader)
-    print("Gets here")
     confirmationStr = SSI.observationSocket.sendAndReceive(commands.startLeader()) # Receive a confirmation string
-    print("Also gets here")
     print(confirmationStr)
 
     return Leader, Follower
@@ -34,7 +32,6 @@ def main():
     SimRecorder = SimulationRecorder()
     #LiveTracker = LiveRoverTracker()
     PostRunAnalysis = PostRunAnalyzer()
-    print("Gets here too")
     supervisor = Supervisor(Leader, Follower, SimRecorder, PostRunAnalyzer=PostRunAnalysis)
 
     startTime = time.time()
