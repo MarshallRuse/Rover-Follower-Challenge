@@ -1,4 +1,3 @@
-import time
 import math
 
 import commands
@@ -6,7 +5,6 @@ import global_vars
 import math_utils as mathUtils
 from socket_communication_errors import *
 
-# TODO: Make the code more DRY when done, a lot of repetitive functions
 
 # The Rover class
 class Rover:
@@ -23,27 +21,29 @@ class Rover:
         self.position = [1,1]
         self.prevPosition = [1,1]
 
-    #TODO: Tie the updating of these values
-    # to a state update interval
-    '''
     def getPosition(self):
         return self.position
 
-    def getSpeed(self):
-        return self.speed
+    def getPrevPostion(self):
+        return self.prevPosition
 
     def getVelocity(self):
         return self.velocity
 
-    def getCompassHeading(self):
-        return self.compassHeading
-    '''
+    def getSpeed(self):
+        return self.speed
+
+    def getCompassHeadingAngle(self):
+        return self.compassHeadingAngle
+
+    def getHeadingVector(self):
+        return self.headingVector
+
 
 class Leader(Rover):
 
     def __init__(self, socketConn):
         super().__init__(socketConn)
-
 
     def setPosition(self):
         self.prevPosition = self.position
@@ -63,7 +63,6 @@ class Leader(Rover):
         self.compassHeadingAngle = mathUtils.xRelativeToCompass(math.atan2(self.headingVector[1],
                                                                            self.headingVector[0]))
 
-
     def setVelocity(self):
         timeInterval = global_vars.delta_time
         pos1 = self.prevPosition
@@ -75,26 +74,6 @@ class Leader(Rover):
     def setSpeed(self):
         vel = self.velocity
         return math.sqrt(math.pow(vel[0], 2) + math.pow(vel[1], 2))
-
-
-    def getPosition(self):
-        return self.position
-
-    def getPrevPostion(self):
-        return self.prevPosition
-
-    def getHeadingVector(self):
-        return self.headingVector
-
-    def getCompassHeadingAngle(self):
-        return self.compassHeadingAngle
-
-    def getVelocity(self):
-        return self.velocity
-
-    def getSpeed(self):
-        return self.speed
-
 
 
 class Follower(Rover):
@@ -130,7 +109,7 @@ class Follower(Rover):
             CompassString = self.conn.sendAndReceive(commands.roverCompassDir())
             if len(CompassString) > 0:
                 compassAngle = CompassString.split(',')
-                self.compassHeading = float(compassAngle[1][:-2])
+                self.compassHeadingAngle = float(compassAngle[1][:-2])
             else:
                 raise RoverCompassReturnError('Follower Compass Angle not returned by socket')
         except RoverCompassReturnError as e:
@@ -147,24 +126,6 @@ class Follower(Rover):
     def setSpeed(self):
         vel = self.velocity
         return math.sqrt(math.pow(vel[0], 2) + math.pow(vel[1], 2))
-
-    def getCompassHeadingAngle(self):
-        return self.compassHeading
-
-    def getHeadingVector(self):
-        return self.headingVector
-
-    def getPosition(self):
-        return self.position
-
-    def getPrevPostion(self):
-        return self.prevPosition
-
-    def getVelocity(self):
-        return self.velocity
-
-    def getSpeed(self):
-        return self.speed
 
     #### Self Actuating Methods ####
     def accelerate(self, leftWheel, rightWheel):

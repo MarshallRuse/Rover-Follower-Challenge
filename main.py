@@ -12,23 +12,16 @@ import commands
 import global_vars
 
 
-# Instantiate Leader, Follower Rovers (with their socket connections)
-# Start the simulation by sending 'ready'
-def startSimulation(SSI):
+def main():
+    SSI = SimulationSocketInterface()
 
     # Leader must be instantiated first, initialization of follower depends on it
     # A follower must have someone to follow
     Leader = Rover.Leader(SSI.observationSocket)
     Follower = Rover.Follower(SSI.controlSocket, Leader)
-    confirmationStr = SSI.observationSocket.sendAndReceive(commands.startLeader()) # Receive a confirmation string
+    confirmationStr = SSI.observationSocket.sendAndReceive(commands.startLeader())  # Receive a confirmation string
     print(confirmationStr)
 
-    return Leader, Follower
-
-
-def main():
-    SSI = SimulationSocketInterface()
-    Leader, Follower = startSimulation(SSI)
     SimRecorder = SimulationRecorder()
     #LiveTracker = LiveRoverTracker()
     PostRunAnalysis = PostRunAnalyzer()
@@ -37,7 +30,6 @@ def main():
     startTime = time.time()
     i = 0
     while time.time() < startTime + 60:
-        #print("TIME::: " + str(i) + " secs.")
         SimRecorder.record_time(i)
         supervisor.execute()
         i += global_vars.delta_time

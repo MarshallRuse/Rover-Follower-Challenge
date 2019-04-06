@@ -1,6 +1,4 @@
 import math
-
-from pose import *
 from configuration_settings import *
 import math_utils as math_utils
 import global_vars
@@ -33,6 +31,9 @@ class Supervisor:
         self.followerCompassHeading = 1  # initial dummy placeholder
         self.followerVelocity = 1
         self.followerSpeed = 1
+        self.followerWheelRad = self.Follower.WHEEL_RADIUS
+        self.followerAxleLen = self.Follower.WHEEL_AXLE_LENGTH
+
 
         # Follower error metrics
         self.errorAngle = 0  # initial dummy placeholder
@@ -95,8 +96,6 @@ class Supervisor:
         self.SimRecorder.record_follower_world_cs_x(self.followerPosition[0])
         self.SimRecorder.record_follower_world_cs_z(self.followerPosition[1])
         self.SimRecorder.record_follower_compass_heading(self.followerCompassHeading)
-        # TODO: Record Heading, Velocity, Speed values
-
 
     def updateLeaderPose(self):
         self.leaderPrevPosition = self.Leader.getPrevPostion()
@@ -108,7 +107,6 @@ class Supervisor:
         # Record values
         self.SimRecorder.record_leader_world_cs_x(self.leaderPosition[0])
         self.SimRecorder.record_leader_world_cs_z(self.leaderPosition[1])
-        # TODO: Record Heading, Velocity, Speed values
 
     def updateFCSLeaderPose(self):
         # FF = FollowerFrame
@@ -153,8 +151,6 @@ class Supervisor:
 
         errorDeriv = (self.errorDistance - self.prevErrorDistance) / self.deltaTime
         tanh_error = math_utils.tanh(errorDeriv)
-        #print("tanh_error: " + str(tanh_error))
-        #print("errorDeriv: " + str(errorDeriv))
 
         self.v = (math_utils.logistic(self.errorDistance, mid=logisticFuncMid,
                                      growthRate=logisticFuncGrowthRate) * self.vMax) + (self.linVelErrDerivCoeff * tanh_error * abs(errorDeriv))
@@ -170,15 +166,15 @@ class Supervisor:
         proportionalError = (self.kP / self.deltaTime) * self.errorAngle
         integralError = (self.kI * self.deltaTime) * self.errorAngleRiemannSum
         derivativeError = (self.kD / self.deltaTime) * (self.errorAngle - self.prevErrorAngle)
-        omega = proportionalError + integralError + derivativeError
-        #print("OMEGA: " + str(omega))
-        v = self.v / math.sqrt(abs(omega) + 1)
-        #print("v: " + str(v))
 
-        lVelocity, rVelocity = self.uniToDiff(v, omega)
-        #print("lVelocity is: " + str(lVelocity))
-        #print("rVelocity is: " + str(rVelocity))
-        #print("\n ------------------------------------- \n")
+        omega = proportionalError + integralError + derivativeError
+        v = self.v / math.sqrt(abs(omega) + 1)
+
+        lVelocity, rVelocity = math_utils.uniToDiff(v, omega, self.followerWheelRad, self.followerAxleLen)
+
+        if self.SimRecorder != None:
+            self.SimRecorder.record_follower_wheel_radius(self.Follower.WHEEL_RADIUS)
+            self.SimRecorder.record_follower_axle_length(self.Follower.WHEEL_AXLE_LENGTH)
 
         # Bound the possible velocity values
         if lVelocity < -100:
@@ -248,19 +244,6 @@ class Supervisor:
             self.PostRunAnalysis.updateTime()
             self.PostRunAnalysis.updateGoalDistances()
 
-
-    def uniToDiff(self, v, omega):
-        radius = self.Follower.WHEEL_RADIUS
-        wheelBase = self.Follower.WHEEL_AXLE_LENGTH
-        self.SimRecorder.record_follower_wheel_radius(radius)
-        self.SimRecorder.record_follower_axle_length(wheelBase)
-
-        # The +/- were actually inverted from convention, and that
-        # seemed to stop the heading error balancing on -180/180
-        lVelocity = (2 * v) + (omega * wheelBase) / (2 * radius)
-        rVelocity = (2 * v) - (omega * wheelBase) / (2 * radius)
-
-        return lVelocity, rVelocity
 
 
 
